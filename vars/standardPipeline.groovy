@@ -61,7 +61,6 @@ def testScanStages(){
 						sh "echo 'shell scripts to run integration tests...'"
 					}
 		}
-	}
 	sage("Code-Scan") {
 			echo("---- Scan Stage -----")
 	}
