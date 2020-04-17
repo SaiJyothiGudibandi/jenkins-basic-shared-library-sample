@@ -19,6 +19,12 @@ def call(body) {
 				// archiveArtifacts artifacts: '.zip', onlyIfSuccessful: true
 	        }
 			if (branch != master) {
+				sh "echo 'branch is master"
+			}
+				else
+				{
+					sh "echo 'Skipping test cases"
+				}
 				stage('Tests') {
 					parallel 'static': {
 						sh "echo 'shell scripts to run static tests...'"
@@ -31,10 +37,7 @@ def call(body) {
 							}
 				}
 			}
-			else
-			{
-				sh "echo 'Skipping test cases"
-			}
+
 	      	stage ('Deploy') {
 	            sh "echo 'deploying to server ...'"
 	      	}
