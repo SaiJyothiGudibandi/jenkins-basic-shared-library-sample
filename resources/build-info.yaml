@@ -1,0 +1,8 @@
+- name: build
+  source: "."
+  commands:
+    - "echo mvn build"
+    - "mkdir targets"
+    - "echo testing-creating-jar > targets/1.0-snapshot.jar"
+  artifacts:
+    - targets/*.jar

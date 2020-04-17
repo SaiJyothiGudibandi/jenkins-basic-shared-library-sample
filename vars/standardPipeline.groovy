@@ -18,23 +18,19 @@ def call(body) {
 	        	sh "echo 'building ${config.projectName} ...'"
 				// archiveArtifacts artifacts: '.zip', onlyIfSuccessful: true
 	        }
-			stage ('push artifact') {
-					sh 'mkdir archive'
-					sh 'echo test > archive/test.txt'
-					zip zipFile: 'test.zip', archive: false, dir: 'archive'
-					archiveArtifacts artifacts: 'test.zip', fingerprint: true
+			if (branch != release) {
+				stage('Tests') {
+					parallel 'static': {
+						sh "echo 'shell scripts to run static tests...'"
+					},
+							'unit': {
+								sh "echo 'shell scripts to run unit tests...'"
+							},
+							'integration': {
+								sh "echo 'shell scripts to run integration tests...'"
+							}
+				}
 			}
-	        stage ('Tests') {
-		        parallel 'static': {
-		            sh "echo 'shell scripts to run static tests...'"
-		        },
-		        'unit': {
-		            sh "echo 'shell scripts to run unit tests...'"
-		        },
-		        'integration': {
-		            sh "echo 'shell scripts to run integration tests...'"
-		        }
-	        }
 	      	stage ('Deploy') {
 	            sh "echo 'deploying to server ${config.serverDomain}...'"
 	      	}
