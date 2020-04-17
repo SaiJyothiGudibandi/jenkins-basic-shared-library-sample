@@ -15,8 +15,9 @@ def call(body) {
 				sh "echo $branch"
 			}
 			stage('Build') {
-				sh "echo 'building ${config.projectName} ...'"
-				publishStages()
+				buildStages()
+				//sh "echo 'building ${config.projectName} ...'"
+				//publishStages()
 				// archiveArtifacts artifacts: '.zip', onlyIfSuccessful: true
 			}
 			if (branch != "dev") {
@@ -45,9 +46,13 @@ def call(body) {
 	    }
     }
 }
-def publishStages(){
-			stage("Publish Artifact") {
-				echo("Upload To Artifactory")
+
+def buildStages(){
+	stages("Build") {
+		sh "echo 'building...'"
+	}
+	stage("Publish Artifact") {
+		echo("Upload To Artifactory")
 			}
 }
 
