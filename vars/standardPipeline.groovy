@@ -16,9 +16,10 @@ def call(body) {
 	        }
 	        stage ('Build') {
 	        	sh "echo 'building ${config.projectName} ...'"
+				publishStages()
 				// archiveArtifacts artifacts: '.zip', onlyIfSuccessful: true
 	        }
-			if ($branch != 'master') {
+			if (branch == config.release_branch) {
 				stage('Tests') {
 					parallel 'static': {
 						sh "echo 'shell scripts to run static tests...'"
@@ -31,18 +32,48 @@ def call(body) {
 							}
 				}
 			}
-			else
-			{
-				sh "echo 'Skip test cases"
-			}
 	      	stage ('Deploy') {
-	            sh "echo 'deploying to server ${config.serverDomain}...'"
+	            sh "echo 'deploying to server ...'"
+				deployStages()
+
 	      	}
 	    } catch (err) {
 	        currentBuild.result = 'FAILED'
 	        throw err
 	    }
     }
+}
+def publishStages(){
+		node {
+			stage("Publish Artifact") {
+				echo("Upload To Artifactory")
+			}
+		}
+}
+
+def deployStages(){
+	def publishers = [:]
+	publishers["docker"] = {
+		node {
+			stage("Build Docker Image") {
+				echo "Build Docker"
+			}
+			stage("Publish Docker Image") {
+				echo "Publish Docker"
+			}
+		}
+	}
+	publishers["helm-chart"] = {
+		node {
+			stage("Build Helm Chart") {
+				echo "Build Helm Chart"
+			}
+			stage("Publish Helm Chart") {
+				echo "Publish Helm Chart"
+			}
+		}
+	}
+	parallel publishers
 }
 
 
