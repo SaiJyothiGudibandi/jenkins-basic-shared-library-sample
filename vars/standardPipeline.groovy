@@ -14,15 +14,15 @@ def call(body) {
 			if (branch.startsWith("feature"))
 			{
 				echo "Starts with Feature*"
-			}
-			stage('Checkout') {
-				checkout scm
-			}
-			stage('Build') {
-				buildStages()
-				//sh "echo 'building ${config.projectName} ...'"
-				//publishStages()
-				// archiveArtifacts artifacts: '.zip', onlyIfSuccessful: true
+				stage('Checkout') {
+					checkout scm
+				}
+				stage('Build') {
+					buildStages()
+					//sh "echo 'building ${config.projectName} ...'"
+					//publishStages()
+					// archiveArtifacts artifacts: '.zip', onlyIfSuccessful: true
+				}
 			}
 			if (branch != "dev") {
 				stage('Tests') {
@@ -53,12 +53,12 @@ def call(body) {
 
 def buildStages(){
 	def stages = [:]
-	stages["build"] = {
+	stages["build-stage"] = {
 		stage("Build") {
 			echo "building..."
 		}
 	}
-	stages["build"] = {
+	stages["publish-stage"] = {
 		stage("Publish Artifact") {
 			echo("Upload To Artifactory")
 		}
