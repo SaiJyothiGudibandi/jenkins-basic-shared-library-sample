@@ -11,6 +11,8 @@ def call(body) {
 	    try {
 	        stage ('Clone') {
 	        	checkout scm
+				branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
+				echo $branch
 	        }
 	        stage ('Build') {
 	        	sh "echo 'building ${config.projectName} ...'"
