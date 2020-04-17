@@ -9,16 +9,16 @@ def call(body) {
 	    deleteDir()
 
 	    try {
-	        stage ('Checkout') {
+			stage('Checkout') {
 				checkout scm
 				branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
 				sh "echo $branch"
-	        }
-	        stage ('Build') {
-	        	sh "echo 'building ${config.projectName} ...'"
+			}
+			stage('Build') {
+				sh "echo 'building ${config.projectName} ...'"
 				publishStages()
 				// archiveArtifacts artifacts: '.zip', onlyIfSuccessful: true
-	        }
+			}
 			if (branch != "dev") {
 				stage('Tests') {
 					parallel 'static': {
@@ -32,12 +32,14 @@ def call(body) {
 							}
 				}
 			}
-	      	stage ('Deploy') {
-	            sh "echo 'deploying to server ...'"
-				deployStages()
+			if (branch == config.release_branch) {
+				stage('Deploy') {
+					sh "echo 'deploying to server ...'"
+					deployStages()
 
-	      	}
-	    } catch (err) {
+				}
+			}
+		}catch (err) {
 	        currentBuild.result = 'FAILED'
 	        throw err
 	    }
