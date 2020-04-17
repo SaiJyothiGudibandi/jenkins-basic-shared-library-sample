@@ -18,7 +18,7 @@ def call(body) {
 	        	sh "echo 'building ${config.projectName} ...'"
 				// archiveArtifacts artifacts: '.zip', onlyIfSuccessful: true
 	        }
-			if (branch != release) {
+			if (branch != master) {
 				stage('Tests') {
 					parallel 'static': {
 						sh "echo 'shell scripts to run static tests...'"
