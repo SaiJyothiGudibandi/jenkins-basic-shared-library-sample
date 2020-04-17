@@ -25,6 +25,7 @@ def call(body) {
 					zip zipFile: 'test.zip', archive: false, dir: 'archive'
 					archiveArtifacts artifacts: 'test.zip', fingerprint: true
 				}
+			}
 	        stage ('Tests') {
 		        parallel 'static': {
 		            sh "echo 'shell scripts to run static tests...'"
