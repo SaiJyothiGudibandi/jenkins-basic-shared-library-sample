@@ -9,7 +9,7 @@ def call(body) {
 	    deleteDir()
 
 	    try {
-	        stage ('Clone') {
+	        stage ('Checkout') {
 	        	checkout scm
 				branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
 				echo $branch
