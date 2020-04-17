@@ -51,7 +51,7 @@ def buildStages(){
 	def stages = [:]
 	stages["build"] = {
 		stage("Build") {
-			sh "echo 'building...'"
+			echo "building..."
 		}
 	}
 	stages["build"] = {
