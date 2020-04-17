@@ -44,34 +44,29 @@ def call(body) {
     }
 }
 def publishStages(){
-		node {
 			stage("Publish Artifact") {
 				echo("Upload To Artifactory")
 			}
-		}
 }
 
 def deployStages(){
 	def publishers = [:]
 	publishers["docker"] = {
-		node {
 			stage("Build Docker Image") {
 				echo "Build Docker"
 			}
 			stage("Publish Docker Image") {
 				echo "Publish Docker"
 			}
-		}
+
 	}
 	publishers["helm-chart"] = {
-		node {
 			stage("Build Helm Chart") {
 				echo "Build Helm Chart"
 			}
 			stage("Publish Helm Chart") {
 				echo "Publish Helm Chart"
 			}
-		}
 	}
 	parallel publishers
 }
