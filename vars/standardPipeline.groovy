@@ -9,10 +9,14 @@ def call(body) {
 	    deleteDir()
 
 	    try {
+			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
+			sh "echo $branch"
+			if (branchstartsWith("feature"))
+			{
+				echo "Starts with Feature*"
+			}
 			stage('Checkout') {
 				checkout scm
-				branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
-				sh "echo $branch"
 			}
 			stage('Build') {
 				buildStages()
