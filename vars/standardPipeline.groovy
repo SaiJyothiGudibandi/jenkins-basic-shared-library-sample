@@ -19,7 +19,7 @@ def call(body) {
 				publishStages()
 				// archiveArtifacts artifacts: '.zip', onlyIfSuccessful: true
 	        }
-			if (branch == config.release_branch) {
+			if (branch != "dev") {
 				stage('Tests') {
 					parallel 'static': {
 						sh "echo 'shell scripts to run static tests...'"
