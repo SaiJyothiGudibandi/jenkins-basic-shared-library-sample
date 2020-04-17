@@ -12,7 +12,6 @@ def call(body) {
 			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
 			sh "echo $branch"
 			if (branch.startsWith("feature") || branch.startsWith("dev")) {
-				{
 					echo "Starts with Feature* or Dev"
 					stage('Checkout') {
 						checkout scm
@@ -20,7 +19,6 @@ def call(body) {
 					buildStages()
 					testScanStages()
 				}
-			}
 			if (branch.startsWith("dev")) {
 				echo "Dev Branch"
 				publishStages()
