@@ -10,12 +10,13 @@ def call(body) {
 
 	    try {
 	        stage ('Checkout') {
-	        	checkout scm
+	        	checkout()
 				branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
 				sh "echo $branch"
 	        }
 	        stage ('Build') {
 	        	sh "echo 'building ${config.projectName} ...'"
+				archiveArtifacts artifacts: '.zip', onlyIfSuccessful: true
 	        }
 	        stage ('Tests') {
 		        parallel 'static': {

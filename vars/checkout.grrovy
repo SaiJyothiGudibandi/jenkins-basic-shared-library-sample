@@ -1,0 +1,7 @@
+def call() {
+    stage("Checkout"){
+        step([$class: 'WsCleanup'])
+        checkout scm
+        sh "git fetch"
+    }
+}
