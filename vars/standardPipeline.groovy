@@ -10,7 +10,7 @@ def call(body) {
 
 	    try {
 	        stage ('Checkout') {
-	        	checkout()
+				checkout scm
 				branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
 				sh "echo $branch"
 	        }
