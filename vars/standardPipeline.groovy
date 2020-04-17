@@ -61,9 +61,7 @@ def testScanStages(){
 						sh "echo 'shell scripts to run integration tests...'"
 					}
 		}
-	}
-
-		stage("Code-Scan") {
+	}age("Code-Scan") {
 			echo("---- Scan Stage -----")
 	}
 
