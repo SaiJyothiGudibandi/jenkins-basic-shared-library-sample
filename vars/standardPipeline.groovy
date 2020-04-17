@@ -12,7 +12,7 @@ def call(body) {
 	        stage ('Checkout') {
 	        	checkout scm
 				branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
-				echo $branch
+				sh "echo $branch"
 	        }
 	        stage ('Build') {
 	        	sh "echo 'building ${config.projectName} ...'"
