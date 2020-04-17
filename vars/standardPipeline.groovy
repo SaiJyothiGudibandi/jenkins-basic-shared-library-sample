@@ -11,21 +11,23 @@ def call(body) {
 	    try {
 			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
 			sh "echo $branch"
-			if (branch.startsWith("feature"))
-			{
-				echo "Starts with Feature*"
-				stage('Checkout') {
-					checkout scm
+			if (branch.startsWith("feature") || branch.startsWith("dev")) {
+				{
+					echo "Starts with Feature* or Dev"
+					stage('Checkout') {
+						checkout scm
+					}
+					buildStages()
+					testScanStages()
 				}
-				buildStages()
-				testScanStages()
+			}
+			if (branch.startsWith("dev")) {
+				echo "Dev Branch"
+				publishStages()
 			}
 			if (branch == config.release_branch) {
-				stage('Deploy') {
-					sh "echo 'deploying to server ...'"
-					deployStages()
-
-				}
+				echo "Release branch or Master"
+				deployStages()
 			}
 		}catch (err) {
 	        currentBuild.result = 'FAILED'
@@ -34,40 +36,28 @@ def call(body) {
     }
 }
 
-def buildStages(){
-	def stages = [:]
-	stages["build-stage"] = {
-		stage("Build") {
-			echo "building..."
-		}
+def buildStages() {
+	stage("Build") {
+		echo "building..."
 	}
-	stages["publish-stage"] = {
-		stage("Publish Artifact") {
-			echo("Upload To Artifactory")
-		}
-	}
-	parallel stages
 }
-
 def testScanStages(){
-		stage('Test') {
-			parallel 'static': {
-				sh "echo 'shell scripts to run static tests...'"
-			},
-					'unit': {
-						sh "echo 'shell scripts to run unit tests...'"
-					},
-					'integration': {
-						sh "echo 'shell scripts to run integration tests...'"
-					}
-		}
 	stage("Code-Scan") {
-			echo("---- Scan Stage -----")
+		echo("---- Scan Stage -----")
 	}
-
+	stage('Test') {
+		parallel 'static': {
+			sh "echo 'shell scripts to run static tests...'"
+		},
+				'unit': {
+					sh "echo 'shell scripts to run unit tests...'"
+				},
+				'integration': {
+					sh "echo 'shell scripts to run integration tests...'"
+				}
+		}
 }
-
-def deployStages(){
+def publishStages(){
 	def publishers = [:]
 	publishers["docker"] = {
 			stage("Build Docker Image") {
@@ -86,7 +76,20 @@ def deployStages(){
 				echo "Publish Helm Chart"
 			}
 	}
+	publishers["gcr"] = {
+		stage("Push Image to GCR") {
+			echo "Pushing image to GCR"
+		}
+	}
 	parallel publishers
+}
+def deployStages() {
+	stage("Fetch-Helm-Chart") {
+		echo "Fetching Helm chart from Helm Artifactory"
+	}
+	stage("Deploy-to-GKE") {
+		echo "Deploying Helm chart to GKE cluster"
+	}
 }
 
 
