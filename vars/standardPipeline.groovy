@@ -15,16 +15,10 @@ def call(body) {
 				sh "echo $branch"
 	        }
 	        stage ('Build') {
-	        	sh "echo 'building ...'"
+	        	sh "echo 'building ${config.projectName} ...'"
 				// archiveArtifacts artifacts: '.zip', onlyIfSuccessful: true
 	        }
-			if (branch != master) {
-				sh "echo 'branch is master"
-			}
-				else
-				{
-					sh "echo 'Skipping test cases"
-				}
+			if (branch != 'master') {
 				stage('Tests') {
 					parallel 'static': {
 						sh "echo 'shell scripts to run static tests...'"
@@ -37,9 +31,12 @@ def call(body) {
 							}
 				}
 			}
-
+			else
+			{
+				sh "echo 'Skip test cases"
+			}
 	      	stage ('Deploy') {
-	            sh "echo 'deploying to server ...'"
+	            sh "echo 'deploying to server ${config.serverDomain}...'"
 	      	}
 	    } catch (err) {
 	        currentBuild.result = 'FAILED'
