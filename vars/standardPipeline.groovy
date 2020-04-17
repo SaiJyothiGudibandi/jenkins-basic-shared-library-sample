@@ -50,9 +50,7 @@ def buildStages(){
 }
 
 def testScanStages(){
-	def stages = [:]
-	stages["test-stage"] = {
-		stage('Tests') {
+		stage('Test') {
 			parallel 'static': {
 				sh "echo 'shell scripts to run static tests...'"
 			},
@@ -64,12 +62,11 @@ def testScanStages(){
 					}
 		}
 	}
-	stages["scan-stage"] = {
-		stage("Scan") {
+
+		stage("Code-Scan") {
 			echo("---- Scan Stage -----")
-		}
 	}
-	parallel stages
+
 }
 
 def deployStages(){
