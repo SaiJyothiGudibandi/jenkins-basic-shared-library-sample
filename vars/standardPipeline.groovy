@@ -15,7 +15,7 @@ def call(body) {
 				sh "echo $branch"
 	        }
 	        stage ('Build') {
-	        	sh "echo 'building ${config.projectName} ...'"
+	        	sh "echo 'building ...'"
 				// archiveArtifacts artifacts: '.zip', onlyIfSuccessful: true
 	        }
 			if (branch != master) {
@@ -31,8 +31,12 @@ def call(body) {
 							}
 				}
 			}
+			else
+			{
+				sh "echo 'Skipping test cases"
+			}
 	      	stage ('Deploy') {
-	            sh "echo 'deploying to server ${config.serverDomain}...'"
+	            sh "echo 'deploying to server ...'"
 	      	}
 	    } catch (err) {
 	        currentBuild.result = 'FAILED'
