@@ -48,12 +48,18 @@ def call(body) {
 }
 
 def buildStages(){
-	stages("Build") {
-		sh "echo 'building...'"
+	def stages = [:]
+	stages["build"] = {
+		stage("Build") {
+			sh "echo 'building...'"
+		}
 	}
-	stage("Publish Artifact") {
-		echo("Upload To Artifactory")
-			}
+	stages["build"] = {
+		stage("Publish Artifact") {
+			echo("Upload To Artifactory")
+		}
+	}
+	parallel stages
 }
 
 def deployStages(){
