@@ -17,25 +17,8 @@ def call(body) {
 				stage('Checkout') {
 					checkout scm
 				}
-				stage('Build') {
-					buildStages()
-					//sh "echo 'building ${config.projectName} ...'"
-					//publishStages()
-					// archiveArtifacts artifacts: '.zip', onlyIfSuccessful: true
-				}
-			}
-			if (branch != "dev") {
-				stage('Tests') {
-					parallel 'static': {
-						sh "echo 'shell scripts to run static tests...'"
-					},
-							'unit': {
-								sh "echo 'shell scripts to run unit tests...'"
-							},
-							'integration': {
-								sh "echo 'shell scripts to run integration tests...'"
-							}
-				}
+				buildStages()
+				testScanStages()
 			}
 			if (branch == config.release_branch) {
 				stage('Deploy') {
@@ -61,6 +44,29 @@ def buildStages(){
 	stages["publish-stage"] = {
 		stage("Publish Artifact") {
 			echo("Upload To Artifactory")
+		}
+	}
+	parallel stages
+}
+
+def testScanStages(){
+	def stages = [:]
+	stages["test-stage"] = {
+		stage('Tests') {
+			parallel 'static': {
+				sh "echo 'shell scripts to run static tests...'"
+			},
+					'unit': {
+						sh "echo 'shell scripts to run unit tests...'"
+					},
+					'integration': {
+						sh "echo 'shell scripts to run integration tests...'"
+					}
+		}
+	}
+	stages["scan-stage"] = {
+		stage("Scan") {
+			echo("---- Scan Stage -----")
 		}
 	}
 	parallel stages
