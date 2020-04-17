@@ -1,6 +1,6 @@
 def call() {
         // step([$class: 'WsCleanup'])
-        sh "echo "Executing Checkout""
+        echo "Checkout groovy"
         checkout scm
         sh "git fetch"
 }
