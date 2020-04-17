@@ -16,8 +16,15 @@ def call(body) {
 	        }
 	        stage ('Build') {
 	        	sh "echo 'building ${config.projectName} ...'"
-				archiveArtifacts artifacts: '.zip', onlyIfSuccessful: true
+				// archiveArtifacts artifacts: '.zip', onlyIfSuccessful: true
 	        }
+			stage ('push artifact') {
+				steps {
+					sh 'mkdir archive'
+					sh 'echo test > archive/test.txt'
+					zip zipFile: 'test.zip', archive: false, dir: 'archive'
+					archiveArtifacts artifacts: 'test.zip', fingerprint: true
+				}
 	        stage ('Tests') {
 		        parallel 'static': {
 		            sh "echo 'shell scripts to run static tests...'"
