@@ -18,13 +18,13 @@ def call(Map config) {
 			config.helm_artifactory_url = config.helm_artifactory_url + '/';
 			println config.helm_artifactory_url;
 			helm_chart_url = config.helm_artifactory_url + config.helm_chart_name
-			println "im here"
 			println helm_chart_url
-			println "im here 2"
+
 		}
 	}
 	else
-		exit : println "Helm Chart URl and Name - not defined or null"
+		println "Helm Chart URl and Name - not defined or null"
+		System.exit(0)
 
     node {
 	    // Clean workspace before doing anything
