@@ -113,7 +113,6 @@ def deployStages(helm_chart_url) {
 		// get <environment_namespace>-<Helm-chart-name>
 		// fetch  helm_chart_url
 		//unzip tgz
-		println helm_chart_url
 		echo "Fetching Helm chart ${helm_chart_url} from Helm Artifactory"
 		echo "Unzip ${helm_chart_url}"
 	}
