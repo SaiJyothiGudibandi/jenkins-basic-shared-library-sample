@@ -23,8 +23,8 @@ def call(body) {
 				println "At least one element matches the pattern"
 			} else {
 				println "string does not have '/' at the end"
-				url = config.helm_artifactory_url + '/';
-				println helm-chart-url;
+				config.helm_artifactory_url = config.helm_artifactory_url + '/';
+				println config.helm_artifactory_url;
 			}
 			if (branch.startsWith("feature") || branch.startsWith("dev")) {
 					echo "Starts with Feature* or Dev"
