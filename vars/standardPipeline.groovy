@@ -21,10 +21,10 @@ def call(Map config) {
 			println helm_chart_url
 
 		}
-	}
-	else
+	} else {
 		println "Helm Chart URl and Name - not defined or null"
 		error('Helm Chart URl and Name - not defined or null')
+	}
 
     node {
 	    // Clean workspace before doing anything
