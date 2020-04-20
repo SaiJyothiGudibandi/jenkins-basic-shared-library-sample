@@ -14,7 +14,7 @@ def call(body) {
 			sh "echo $branch"
 			sh "echo $branch1"
 			// helm_chart_url = ${config.helm_artifactory_url} + ${config.helm_chart_name}
-			helm-chart-url = ${config.helm_artifactory_url}
+			helm-chart-url = "${config.helm_artifactory_url}"
 			// helm-chart-name = ${config.helm_chart_name}
 			if (helm-chart-url =~ /\/$/) {
 				println "At least one element matches the pattern"
