@@ -60,7 +60,7 @@ def call(body) {
 
 def buildStages() {
 	stage("Build") {
-		echo "build code..."
+		echo "build code"
 	}
 }
 def testStages(){
@@ -78,7 +78,7 @@ def testStages(){
 }
 def scanStages(){
 	stage("Code-Scan") {
-		echo("---- Scan Stage -----")
+		echo("Code Scan Stage")
 	}
 }
 def publishStages(){
@@ -102,7 +102,7 @@ def publishStages(){
 			// }
 		//read environment_namespace variable from jenkinsfile and then publish
 			stage("Publish Helm Chart") {
-				echo "Publish Helm Chart $helm_chart_url"
+				echo "Publish Helm Chart" + $helm_chart_url
 				// use helm_chart_url
 				// <environment_namespace>-<Helm-chart-name>
 			}
