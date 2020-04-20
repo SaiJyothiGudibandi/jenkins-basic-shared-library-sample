@@ -1,7 +1,7 @@
 import java.util.regex.Pattern
 
 def call(Map config) {
-    def config = [:]
+    // def config = [:]
 	def branch
 	def helm_chart_name = "dev-my-helm-chart.tgz"
 	def helm_chart_url
