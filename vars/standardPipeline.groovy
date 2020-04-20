@@ -21,7 +21,9 @@ def call(body) {
 		config.helm_artifactory_url = config.helm_artifactory_url + '/';
 		println config.helm_artifactory_url;
 		helm_chart_url = config.helm_artifactory_url + "dev-my-helm-chart.tgz"
+		println "im here"
 		println helm_chart_url
+		println "im here 2"
 	}
 
     node {
@@ -46,7 +48,7 @@ def call(body) {
 			}
 			if (branch.startsWith("dev")) {
 				echo "Dev Branch"
-				publishStages()
+				publishStages(helm_chart_url)
 			}
 			if (branch.startsWith("dev") || branch.startsWith("rel") || branch.startsWith("master")) {
 				echo "Release branch or Master"
@@ -82,7 +84,7 @@ def scanStages(){
 		echo("Code Scan Stage")
 	}
 }
-def publishStages(){
+def publishStages(helm_chart_url){
 	def publishers = [:]
 	publishers["docker"] = {
 			stage("Build Docker Image") {
@@ -103,10 +105,10 @@ def publishStages(){
 			// }
 		//read environment_namespace variable from jenkinsfile and then publish
 			stage("Publish Helm Chart") {
-				println helm_chart_url
-				// echo "Publish Helm Chart ${helm_chart_url} "
-				// use helm_chart_url
-				// <environment_namespace>-<Helm-chart-name>
+//				println "printing  helm_chart_url" + helm_chart_url
+				 echo "Publish Helm Chart ${helm_chart_url} "
+//				 use helm_chart_url
+//				 <environment_namespace>-<Helm-chart-name>
 			}
 	}
 	parallel publishers
@@ -116,6 +118,7 @@ def deployStages() {
 		// get <environment_namespace>-<Helm-chart-name>
 		// fetch  helm_chart_url
 		//unzip tgz
+		println helm_chart_url
 		echo "Fetching Helm chart $helm_chart_url from Helm Artifactory"
 		echo "Unzip $helm_chart_url"
 	}
