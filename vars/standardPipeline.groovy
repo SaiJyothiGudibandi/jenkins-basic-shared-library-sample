@@ -3,22 +3,20 @@ import java.util.regex.Pattern
 def call(Map config) {
     // def config = [:]
 	def branch
-	def helm_chart_name = "dev-my-helm-chart.tgz"
 	def helm_chart_url
 
-	echo config.helm_artifactory_url[-1]
+	echo config.helm_artifactory_url
 	echo config.helm_chart_name
-
 
 	if (config.helm_artifactory_url =~ /\/$/) {
 		println "Helm URL has /"
-		helm_chart_url = config.helm_artifactory_url + helm_chart_name
+		helm_chart_url = config.helm_artifactory_url + config.helm_chart_name
 		println helm_chart_url
 	} else {
 		println "string does not have '/' at the end"
 		config.helm_artifactory_url = config.helm_artifactory_url + '/';
 		println config.helm_artifactory_url;
-		helm_chart_url = config.helm_artifactory_url + helm_chart_name
+		helm_chart_url = config.helm_artifactory_url + config.helm_chart_name
 		println "im here"
 		println helm_chart_url
 		println "im here 2"
