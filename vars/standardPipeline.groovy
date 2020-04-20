@@ -2,9 +2,28 @@ import java.util.regex.Pattern
 
 def call(body) {
     def config = [:]
+	def branch
+	def helm_chart_name = "dev-my-helm-chart.tgz"
+	def helm_chart_url
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()
+
+	echo config.helm_artifactory_url[-1]
+
+	sh "echo $helm_chart_name"
+
+	if (config.helm_artifactory_url =~ /\/$/) {
+		println "Helm URL has /"
+		helm_chart_url = config.helm_artifactory_url + "dev-my-helm-chart.tgz"
+		println helm_chart_url
+	} else {
+		println "string does not have '/' at the end"
+		config.helm_artifactory_url = config.helm_artifactory_url + '/';
+		println config.helm_artifactory_url;
+		helm_chart_url = config.helm_artifactory_url + "dev-my-helm-chart.tgz"
+		println helm_chart_url
+	}
 
     node {
 	    // Clean workspace before doing anything
@@ -16,23 +35,6 @@ def call(body) {
 			sh "echo $branch"
 			sh "echo $branch1"
 			// helm_chart_url = ${config.helm_artifactory_url} + ${config.helm_chart_name}
-
-			echo config.helm_artifactory_url[-1]
-			def helm_chart_name = "dev-my-helm-chart.tgz"
-			sh "echo $helm_chart_name"
-			def helm_chart_url = ""
-
-			if (config.helm_artifactory_url =~ /\/$/) {
-				println "Helm URL has /"
-				helm_chart_url = config.helm_artifactory_url + "dev-my-helm-chart.tgz"
-				println helm_chart_url
-			} else {
-				println "string does not have '/' at the end"
-				config.helm_artifactory_url = config.helm_artifactory_url + '/';
-				println config.helm_artifactory_url;
-				helm_chart_url = config.helm_artifactory_url + "dev-my-helm-chart.tgz"
-				println helm_chart_url
-			}
 
 			if (branch.startsWith("feature") || branch.startsWith("dev")) {
 					echo "Starts with Feature* or Dev"
