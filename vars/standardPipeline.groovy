@@ -24,7 +24,7 @@ def call(Map config) {
 	}
 	else
 		println "Helm Chart URl and Name - not defined or null"
-		System.exit(0)
+		return 0
 
     node {
 	    // Clean workspace before doing anything
