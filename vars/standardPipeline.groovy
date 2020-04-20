@@ -30,7 +30,7 @@ def call(body) {
 				println "string does not have '/' at the end"
 				config.helm_artifactory_url = config.helm_artifactory_url + '/';
 				println config.helm_artifactory_url;
-				helm_chart_url = config.helm_artifactory_url + $helm_chart_name
+				helm_chart_url = config.helm_artifactory_url + "dev-my-helm-chart.tgz"
 				println helm_chart_url
 			}
 
