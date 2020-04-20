@@ -1,6 +1,6 @@
 import java.util.regex.Pattern
 
-def call(body) {
+def call(Map config) {
     def config = [:]
 	def branch
 	def helm_chart_name = "dev-my-helm-chart.tgz"
