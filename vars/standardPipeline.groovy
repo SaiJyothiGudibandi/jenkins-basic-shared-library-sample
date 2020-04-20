@@ -23,7 +23,8 @@ def call(Map config) {
 		}
 	} else {
 		println "Helm Chart URl and Name - not defined or null"
-		error('Helm Chart URl and Name - not defined or null')
+		// error('Helm Chart URl and Name - not defined or null')
+		sh "exit 1"
 	}
 
     node {
