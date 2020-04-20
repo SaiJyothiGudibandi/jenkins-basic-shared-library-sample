@@ -102,7 +102,7 @@ def publishStages(){
 			// }
 		//read environment_namespace variable from jenkinsfile and then publish
 			stage("Publish Helm Chart") {
-				echo "Publish Helm Chart"
+				echo "Publish Helm Chart $helm_chart_url"
 				// use helm_chart_url
 				// <environment_namespace>-<Helm-chart-name>
 			}
@@ -114,7 +114,8 @@ def deployStages() {
 		// get <environment_namespace>-<Helm-chart-name>
 		// fetch  helm_chart_url
 		//unzip tgz
-		echo "Fetching Helm chart from Helm Artifactory"
+		echo "Fetching Helm chart $helm_chart_url from Helm Artifactory"
+		echo "Unzip $helm_chart_url"
 	}
 	stage("Deploy-to-GKE") {
 		//run helm command
