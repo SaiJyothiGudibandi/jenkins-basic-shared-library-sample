@@ -1,3 +1,5 @@
+import java.util.regex.Pattern
+
 def call(body) {
     def config = [:]
     body.resolveStrategy = Closure.DELEGATE_FIRST
@@ -14,17 +16,16 @@ def call(body) {
 			sh "echo $branch"
 			sh "echo $branch1"
 			// helm_chart_url = ${config.helm_artifactory_url} + ${config.helm_chart_name}
-			// helm-chart-url = config.helm_artifactory_url
+
 			echo config.helm_artifactory_url[-1]
-			// helm-chart-name = ${config.helm_chart_name}
-			// echo config.helm_artifactory_url
-			//if (config.helm_artifactory_url =~ /\/$/) {
-			//	println "At least one element matches the pattern"
-			//} else {
-			//	println "string does not have '/' at the end"
-			//	url = config.helm_artifactory_url + '/';
-			//	println helm-chart-url;
-			//}
+
+			if (config.helm_artifactory_url =~ /\/$/) {
+				println "At least one element matches the pattern"
+			} else {
+				println "string does not have '/' at the end"
+				url = config.helm_artifactory_url + '/';
+				println helm-chart-url;
+			}
 			if (branch.startsWith("feature") || branch.startsWith("dev")) {
 					echo "Starts with Feature* or Dev"
 					stage('Checkout') {
