@@ -18,6 +18,7 @@ def call(body) {
 			// helm_chart_url = ${config.helm_artifactory_url} + ${config.helm_chart_name}
 
 			echo config.helm_artifactory_url[-1]
+			echo config.helm_chart_name
 			def helm_chart_url = ""
 
 			if (config.helm_artifactory_url =~ /\/$/) {
