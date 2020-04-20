@@ -16,9 +16,9 @@ def call(body) {
 					stage('Checkout') {
 						checkout scm
 					}
-					buildStages()
-					testScanStages()
-				}
+				testScanStages()
+				buildStages()
+			}
 			if (branch.startsWith("dev")) {
 				echo "Dev Branch"
 				publishStages()
@@ -66,6 +66,11 @@ def publishStages(){
 			}
 
 	}
+	publishers["gcr"] = {
+		stage("Push Image to GCR") {
+			echo "Pushing image to GCR"
+		}
+	}
 	publishers["helm-chart"] = {
 			stage("Build Helm Chart") {
 				echo "Build Helm Chart"
@@ -73,11 +78,6 @@ def publishStages(){
 			stage("Publish Helm Chart") {
 				echo "Publish Helm Chart"
 			}
-	}
-	publishers["gcr"] = {
-		stage("Push Image to GCR") {
-			echo "Pushing image to GCR"
-		}
 	}
 	parallel publishers
 }
