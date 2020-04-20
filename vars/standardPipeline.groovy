@@ -11,7 +11,6 @@ def call(body) {
 
 	echo config.helm_artifactory_url[-1]
 
-	echo ${helm_chart_name}
 
 	if (config.helm_artifactory_url =~ /\/$/) {
 		println "Helm URL has /"
