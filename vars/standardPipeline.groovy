@@ -5,9 +5,6 @@ def call(Map config) {
 	def branch
 	def helm_chart_name = "dev-my-helm-chart.tgz"
 	def helm_chart_url
-    body.resolveStrategy = Closure.DELEGATE_FIRST
-    body.delegate = config
-    body()
 
 	echo config.helm_artifactory_url[-1]
 	echo config.helm_chart_name
