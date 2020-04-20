@@ -16,14 +16,14 @@ def call(body) {
 			// helm_chart_url = ${config.helm_artifactory_url} + ${config.helm_chart_name}
 			// helm-chart-url = "${config.helm_artifactory_url}"
 			// helm-chart-name = ${config.helm_chart_name}
-			echo ${config.helm_artifactory_url}
-			if (config.helm_artifactory_url =~ /\/$/) {
-				println "At least one element matches the pattern"
-			} else {
-				println "string does not have '/' at the end"
-				url = config.helm_artifactory_url + '/';
-				println helm-chart-url;
-			}
+			echo ${config.helm_artifactory_url}[-1]
+			//if (config.helm_artifactory_url =~ /\/$/) {
+			//	println "At least one element matches the pattern"
+			//} else {
+			//	println "string does not have '/' at the end"
+			//	url = config.helm_artifactory_url + '/';
+			//	println helm-chart-url;
+			//}
 			if (branch.startsWith("feature") || branch.startsWith("dev")) {
 					echo "Starts with Feature* or Dev"
 					stage('Checkout') {
