@@ -24,13 +24,13 @@ def call(body) {
 
 			if (config.helm_artifactory_url =~ /\/$/) {
 				println "Helm URL has /"
-				helm_chart_url = config.helm_artifactory_url + "dev-my-helm-chart.tgz"
+				helm_chart_url = config.helm_artifactory_url + ${helm_chart_url}
 				println helm_chart_url
 			} else {
 				println "string does not have '/' at the end"
 				config.helm_artifactory_url = config.helm_artifactory_url + '/';
 				println config.helm_artifactory_url;
-				helm_chart_url = config.helm_artifactory_url + "dev-my-helm-chart.tgz"
+				helm_chart_url = config.helm_artifactory_url + ${helm_chart_url}
 				println helm_chart_url
 			}
 
@@ -102,7 +102,8 @@ def publishStages(){
 			// }
 		//read environment_namespace variable from jenkinsfile and then publish
 			stage("Publish Helm Chart") {
-				echo "Publish Helm Chart" + $helm_chart_url
+				echo ${helm_chart_url}
+				echo "Publish Helm Chart ${helm_chart_url}"
 				// use helm_chart_url
 				// <environment_namespace>-<Helm-chart-name>
 			}
