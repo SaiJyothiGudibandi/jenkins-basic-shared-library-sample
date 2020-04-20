@@ -52,7 +52,7 @@ def call(body) {
 			}
 			if (branch.startsWith("dev") || branch.startsWith("rel") || branch.startsWith("master")) {
 				echo "Release branch or Master"
-				deployStages()
+				deployStages(helm_chart_url)
 			}
 		}catch (err) {
 	        currentBuild.result = 'FAILED'
@@ -105,7 +105,6 @@ def publishStages(helm_chart_url){
 			// }
 		//read environment_namespace variable from jenkinsfile and then publish
 			stage("Publish Helm Chart") {
-//				println "printing  helm_chart_url" + helm_chart_url
 				 echo "Publish Helm Chart ${helm_chart_url} "
 //				 use helm_chart_url
 //				 <environment_namespace>-<Helm-chart-name>
@@ -113,14 +112,14 @@ def publishStages(helm_chart_url){
 	}
 	parallel publishers
 }
-def deployStages() {
+def deployStages(helm_chart_url) {
 	stage("Fetch-Helm-Chart") {
 		// get <environment_namespace>-<Helm-chart-name>
 		// fetch  helm_chart_url
 		//unzip tgz
 		println helm_chart_url
-		echo "Fetching Helm chart $helm_chart_url from Helm Artifactory"
-		echo "Unzip $helm_chart_url"
+		echo "Fetching Helm chart ${helm_chart_url} from Helm Artifactory"
+		echo "Unzip ${helm_chart_url}"
 	}
 	stage("Deploy-to-GKE") {
 		//run helm command
