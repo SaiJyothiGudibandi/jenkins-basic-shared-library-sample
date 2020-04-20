@@ -10,6 +10,7 @@ def call(body) {
     body()
 
 	echo config.helm_artifactory_url[-1]
+	echo config.helm_chart_name
 
 
 	if (config.helm_artifactory_url =~ /\/$/) {
