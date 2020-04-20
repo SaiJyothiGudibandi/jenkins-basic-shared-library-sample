@@ -4,6 +4,7 @@ def call(Map config) {
     // def config = [:]
 	def branch
 	def helm_chart_url
+	def docker_img
 
 	echo config.helm_artifactory_url
 	echo config.helm_chart_name
@@ -27,6 +28,14 @@ def call(Map config) {
 		sh "exit 1"
 	}
 
+	if(config.docker_id && config.docker_label){
+		docker_img = config.docker_id + '/' + config.docker_label
+		println docker_img
+	}else {
+		println "Docker vars nit defined/null"
+		sh "exit 1"
+	}
+
     node {
 	    // Clean workspace before doing anything
 	    deleteDir()
@@ -44,12 +53,14 @@ def call(Map config) {
 						checkout scm
 					}
 				buildStages()
-				scanStages()
-				testStages()
+				doParallel {
+					scanStages()
+					testStages()
+				}
 			}
 			if (branch.startsWith("dev")) {
 				echo "Dev Branch"
-				publishStages(helm_chart_url)
+				publishStages(helm_chart_url,docker_img)
 			}
 			if (branch.startsWith("dev") || branch.startsWith("rel") || branch.startsWith("master")) {
 				echo "Release branch or Master"
@@ -85,10 +96,11 @@ def scanStages(){
 		echo("Code Scan Stage")
 	}
 }
-def publishStages(helm_chart_url){
+def publishStages(helm_chart_url,docker_img){
 	def publishers = [:]
 	publishers["docker"] = {
 			stage("Build Docker Image") {
+				sh "docker build -t ${docker_img} ."
 				echo "Build Docker"
 			}
 			stage("Publish Docker Image") {
