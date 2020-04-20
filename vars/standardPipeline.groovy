@@ -14,13 +14,13 @@ def call(body) {
 
 	if (config.helm_artifactory_url =~ /\/$/) {
 		println "Helm URL has /"
-		helm_chart_url = config.helm_artifactory_url + ${helm_chart_name}
+		helm_chart_url = config.helm_artifactory_url + helm_chart_name
 		println helm_chart_url
 	} else {
 		println "string does not have '/' at the end"
 		config.helm_artifactory_url = config.helm_artifactory_url + '/';
 		println config.helm_artifactory_url;
-		helm_chart_url = config.helm_artifactory_url + ${helm_chart_name}
+		helm_chart_url = config.helm_artifactory_url + helm_chart_name
 		println "im here"
 		println helm_chart_url
 		println "im here 2"
