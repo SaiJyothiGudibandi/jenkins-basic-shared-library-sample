@@ -10,7 +10,9 @@ def call(body) {
 
 	    try {
 			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
+			branch1 = scm.branches[0].name
 			sh "echo $branch"
+			sh "echo $branch1"
 			if (branch.startsWith("feature") || branch.startsWith("dev")) {
 					echo "Starts with Feature* or Dev"
 					stage('Checkout') {
