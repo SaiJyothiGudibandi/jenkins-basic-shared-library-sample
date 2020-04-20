@@ -19,7 +19,7 @@ def call(body) {
 
 			echo config.helm_artifactory_url[-1]
 			def helm_chart_name = "dev-my-helm-chart.tgz"
-			echo $helm_chart_name
+			sh "echo $helm_chart_name"
 			def helm_chart_url = ""
 
 			if (config.helm_artifactory_url =~ /\/$/) {
