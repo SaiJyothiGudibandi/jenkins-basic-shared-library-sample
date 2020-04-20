@@ -7,25 +7,24 @@ def call(Map config) {
 
 	echo config.helm_artifactory_url
 	echo config.helm_chart_name
-	try {
-		if (config.helm_artifactory_url && config.helm_chart_name) {
-			if (config.helm_artifactory_url =~ /\/$/) {
-				println "Helm URL has /"
-				helm_chart_url = config.helm_artifactory_url + config.helm_chart_name
-				println helm_chart_url
-			} else {
-				println "string does not have '/' at the end"
-				config.helm_artifactory_url = config.helm_artifactory_url + '/';
-				println config.helm_artifactory_url;
-				helm_chart_url = config.helm_artifactory_url + config.helm_chart_name
-				println helm_chart_url
 
-			}
+	if (config.helm_artifactory_url && config.helm_chart_name) {
+		if (config.helm_artifactory_url =~ /\/$/) {
+			println "Helm URL has /"
+			helm_chart_url = config.helm_artifactory_url + config.helm_chart_name
+			println helm_chart_url
+		} else {
+			println "string does not have '/' at the end"
+			config.helm_artifactory_url = config.helm_artifactory_url + '/';
+			println config.helm_artifactory_url;
+			helm_chart_url = config.helm_artifactory_url + config.helm_chart_name
+			println helm_chart_url
+
 		}
-	}catch (err) {
-		println "Helm Chart URl and Name - not defined or null"
-		throw err
 	}
+	else
+		println "Helm Chart URl and Name - not defined or null"
+		error('Helm Chart URl and Name - not defined or null')
 
     node {
 	    // Clean workspace before doing anything
