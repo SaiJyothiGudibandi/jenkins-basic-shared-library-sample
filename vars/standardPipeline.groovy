@@ -32,7 +32,7 @@ def call(Map config) {
 		docker_img = config.docker_id + '/' + config.docker_label
 		println docker_img
 	}else {
-		println "Docker vars nit defined/null"
+		println "Docker vars not defined/null"
 		sh "exit 1"
 	}
 
