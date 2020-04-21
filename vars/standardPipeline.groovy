@@ -29,7 +29,7 @@ def call(Map config) {
 	}
 
 	if(config.docker_id && config.docker_label){
-			docker_img = config.docker_id + '/' + config.docker_label + env.BUILD_NUMBER
+			docker_img = config.docker_id + '/' + config.docker_label + '-' + env.BUILD_NUMBER
 			println docker_img
 		}else{
 		println "Docker vars not defined/null"
@@ -44,7 +44,7 @@ def call(Map config) {
 			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
 			sh "echo $branch"
 			if (branch.startsWith("feature")){
-				docker_img = 'feature' + config.docker_id + '/' + config.docker_label + env.BUILD_NUMBER
+				docker_img = 'feature' + config.docker_id + '/' + config.docker_label + '-' + env.BUILD_NUMBER
 				println docker_img
 			}
 
