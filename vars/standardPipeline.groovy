@@ -3,11 +3,6 @@ import java.util.regex.Pattern
 def call(Map config) {
     // def config = [:]
 	def branch
-	def branch1
-	branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
-	branch1 = scm.branches[0].name
-	sh "echo $branch"
-	sh "echo $branch1"
 	def helm_chart_url
 	def docker_img
 
@@ -52,7 +47,10 @@ def call(Map config) {
 	    deleteDir()
 
 	    try {
-
+			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
+			branch1 = scm.branches[0].name
+			sh "echo $branch"
+			sh "echo $branch1"
 			// helm_chart_url = ${config.helm_artifactory_url} + ${config.helm_chart_name}
 
 			if (branch.startsWith("feature") || branch.startsWith("dev")) {
