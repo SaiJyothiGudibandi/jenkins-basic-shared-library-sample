@@ -2,15 +2,11 @@ import java.util.regex.Pattern
 
 def call(Map config) {
     // def config = [:]
-	def branch
+	def branch = env.BRANCH_NAME
 	def helm_chart_url
 	def docker_img
 
-	branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
-	branch1 = scm.branches[0].name
 	sh "echo $branch"
-	sh "echo $branch1"
-
 	echo config.helm_artifactory_url
 	echo config.helm_chart_name
 
@@ -51,11 +47,8 @@ def call(Map config) {
 	    deleteDir()
 
 	    try {
-			//branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
-			//branch1 = scm.branches[0].name
-			//sh "echo $branch"
-			//sh "echo $branch1"
-			// helm_chart_url = ${config.helm_artifactory_url} + ${config.helm_chart_name}
+			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
+			sh "echo $branch"
 
 			if (branch.startsWith("feature") || branch.startsWith("dev")) {
 					echo "Starts with Feature* or Dev"
