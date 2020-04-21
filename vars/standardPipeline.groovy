@@ -2,11 +2,10 @@ import java.util.regex.Pattern
 
 def call(Map config) {
     // def config = [:]
-	def branch = env.BRANCH_NAME
+	def branch
 	def helm_chart_url
 	def docker_img
 
-	sh "echo $branch"
 	echo config.helm_artifactory_url
 	echo config.helm_chart_name
 
