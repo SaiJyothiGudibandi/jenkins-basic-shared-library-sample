@@ -9,6 +9,7 @@ def call(Map config) {
 	echo config.helm_artifactory_url
 	echo config.helm_chart_name
 
+	// Setting Helm Chart Url based on the values passed from the config
 	if (config.helm_artifactory_url && config.helm_chart_name) {
 		if (config.helm_artifactory_url =~ /\/$/) {
 			println "Helm URL has /"
@@ -29,6 +30,7 @@ def call(Map config) {
 		error('Docker Vars not defined')
 	}
 
+	//Setting Docker image name based on the values passed from the config
 	if(config.docker_id && config.docker_label){
 			docker_img = config.docker_id + '/' + config.docker_label + '-' + env.BUILD_NUMBER
 			println docker_img
@@ -110,7 +112,11 @@ def publishStages(helm_chart_url, docker_img){
 	}
 	publishers["gcr"] = {
 		stage("Push Image to GCR") {
-			echo "Pushing docker image to GCR"
+			if (docker_img.endsWith('feature')){
+				echo "Feature branch image ${docker_img} Cant publish to GCR"
+			}else {
+				echo "Pushing docker image - ${docker_img} to GCR"
+			}
 		}
 	}
 	publishers["helm-chart"] = {
