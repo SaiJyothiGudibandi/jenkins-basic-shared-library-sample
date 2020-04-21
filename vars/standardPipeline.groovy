@@ -27,7 +27,9 @@ def call(Map config) {
 		println "Helm Chart URl and Name - not defined or null"
 		error('Helm Chart URl and Name - not defined or null')
 		// sh "exit 0"
-		error('Docker Vars not defined')
+		ansiColor('xterm') {
+			error('Docker Vars not defined')
+		}
 	}
 
 	//Setting Docker image name based on the values passed from the config
@@ -35,17 +37,15 @@ def call(Map config) {
 			docker_img = config.docker_id + '/' + config.docker_label + '-' + env.BUILD_NUMBER
 			println docker_img
 		}else{
-		println "Docker vars not defined/null"
-		sh "exit 0"
+		ansiColor('xterm') {
+			println "Docker vars not defined/null"
+			sh "exit 0"
+		}
 	}
 
     node {
 	    // Clean workspace before doing anything
 	    deleteDir()
-
-		options {
-			ansiColor('xterm')
-		}
 
 	    try {
 			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
@@ -111,13 +111,17 @@ def publishStages(helm_chart_url, docker_img){
 				sh "docker stop \$(docker ps -a -q)"
 				sh "docker rm \$(docker ps -a -q)"
 				sh "docker run --name mynginx1 -p 80:80 -d ${docker_img}"
-				echo "Published docker image"
+				ansiColor('xterm') {
+					echo "Published docker image"
+				}
 			}
 	}
 	publishers["gcr"] = {
 		stage("Push Image to GCR") {
 			if (docker_img.endsWith('feature')){
-				echo "Feature branch image ${docker_img} Cant publish to GCR"
+				ansiColor('xterm') {
+					echo "Feature branch image ${docker_img} Cant publish to GCR"
+				}
 			}else {
 				echo "Pushing docker image - ${docker_img} to GCR"
 			}
