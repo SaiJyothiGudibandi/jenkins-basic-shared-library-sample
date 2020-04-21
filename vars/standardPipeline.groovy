@@ -53,14 +53,9 @@ def call(Map config) {
 						checkout scm
 					}
 				buildStages()
-				doParallel {
-					scanStages()
-					testStages()
-				}
-			}
-			if (branch.startsWith("dev")) {
-				echo "Dev Branch"
-				publishStages(helm_chart_url,docker_img)
+				scanStages()
+				testStages()
+				publishStages(helm_chart_url, docker_img)
 			}
 			if (branch.startsWith("dev") || branch.startsWith("rel") || branch.startsWith("master")) {
 				echo "Release branch or Master"
@@ -96,15 +91,20 @@ def scanStages(){
 		echo("Code Scan Stage")
 	}
 }
-def publishStages(helm_chart_url,docker_img){
+def publishStages(helm_chart_url, docker_img){
 	def publishers = [:]
 	publishers["docker"] = {
 			stage("Build Docker Image") {
-				sh "docker build -t ${docker_img} ."
 				echo "Build Docker"
+				sh "docker build -t ${docker_img} ."
 			}
 			stage("Publish Docker Image") {
 				echo "Publish Docker"
+				sh "docker push ${docker_img}"
+				sh "docker stop \$(docker ps -a -q)"
+				sh "docker rm \$(docker ps -a -q)"
+				sh "docker run --name mynginx1 -p 80:80 -d ${docker_img}"
+				echo "Published docker image"
 			}
 	}
 	publishers["gcr"] = {
