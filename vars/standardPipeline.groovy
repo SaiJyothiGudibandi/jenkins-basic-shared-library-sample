@@ -24,8 +24,9 @@ def call(Map config) {
 		}
 	} else {
 		println "Helm Chart URl and Name - not defined or null"
-		// error('Helm Chart URl and Name - not defined or null')
-		sh "exit 1"
+		error('Helm Chart URl and Name - not defined or null')
+		// sh "exit 0"
+		error('Docker Vars not defined')
 	}
 
 	if(config.docker_id && config.docker_label){
@@ -33,7 +34,7 @@ def call(Map config) {
 			println docker_img
 		}else{
 		println "Docker vars not defined/null"
-		sh "exit 1"
+		sh "exit 0"
 	}
 
     node {
@@ -68,7 +69,6 @@ def call(Map config) {
 	    }
     }
 }
-
 def buildStages() {
 	stage("Build") {
 		echo "build code"
