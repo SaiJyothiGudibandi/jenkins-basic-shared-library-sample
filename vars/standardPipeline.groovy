@@ -29,10 +29,6 @@ def call(Map config) {
 	}
 
 	if(config.docker_id && config.docker_label){
-		if (branch.startsWith("feature")){
-			docker_img = 'feature' + config.docker_id + '/' + config.docker_label + env.BUILD_NUMBER
-			println docker_img
-		}else{
 			docker_img = config.docker_id + '/' + config.docker_label + env.BUILD_NUMBER
 			println docker_img
 		}
@@ -48,6 +44,10 @@ def call(Map config) {
 	    try {
 			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
 			sh "echo $branch"
+			if (branch.startsWith("feature")){
+				docker_img = 'feature' + config.docker_id + '/' + config.docker_label + env.BUILD_NUMBER
+				println docker_img
+			}
 
 			if (branch.startsWith("feature") || branch.startsWith("dev")) {
 					echo "Starts with Feature* or Dev"
