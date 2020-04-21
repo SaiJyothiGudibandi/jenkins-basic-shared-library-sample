@@ -31,8 +31,7 @@ def call(Map config) {
 	if(config.docker_id && config.docker_label){
 			docker_img = config.docker_id + '/' + config.docker_label + env.BUILD_NUMBER
 			println docker_img
-		}
-	}else {
+		}else{
 		println "Docker vars not defined/null"
 		sh "exit 1"
 	}
