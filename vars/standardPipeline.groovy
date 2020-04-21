@@ -43,6 +43,10 @@ def call(Map config) {
 	    // Clean workspace before doing anything
 	    deleteDir()
 
+		options {
+			ansiColor('xterm')
+		}
+
 	    try {
 			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
 			sh "echo $branch"
