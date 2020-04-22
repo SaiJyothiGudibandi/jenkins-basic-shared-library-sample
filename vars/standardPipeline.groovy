@@ -128,7 +128,6 @@ def deployStages(helm_chart_url, helm_docker_img, branch) {
 		//branch is not feature then error out that u r ref to the feature branch image.
 		echo "Read values.yaml after unzipping"
 		qualityGate(helm_docker_img, branch)
-
 	}
 	stage("Deploy-to-GKE") {
 		//Run helm command to deploy
