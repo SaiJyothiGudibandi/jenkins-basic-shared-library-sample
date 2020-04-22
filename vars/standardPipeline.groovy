@@ -136,19 +136,18 @@ def deployStages(helm_chart_url, helm_docker_img, branch) {
 		def helm_docker_img_label = helm_docker_img.substring(helm_docker_img.lastIndexOf("/") + 1)
 		helm_docker_img_label = helm_docker_img_label.substring(0, helm_docker_img_label.indexOf('-'))
 		println helm_docker_img_label
-		ansiColor("xterm") {
-			if (helm_docker_img_label == "feature") {
-				if (branch.startsWith("feature")) {
-					//Run helm command to deploy
-					echo "Deploying Helm chart ${helm_chart_url} to Lower GKE cluster"
-				} else {
-					println "Can't deploy ${helm_chart_url} to GKE, because you are refering to Feature branch image in Helm Chart values file."
-					exit 0
-				}
-			} else {
+		if (helm_docker_img_label == "feature"){
+			if (branch.startsWith("feature")){
 				//Run helm command to deploy
-				echo "Deploying Helm chart ${helm_chart_url} to GKE cluster"
+				echo "Deploying Helm chart ${helm_chart_url} to Lower GKE cluster"
+			} else {
+				println "Can't deploy ${helm_chart_url} to GKE, because you are refering to Feature branch image in Helm Chart values file."
+				exit 0
 			}
+		}
+		else {
+			//Run helm command to deploy
+			echo "Deploying Helm chart ${helm_chart_url} to GKE cluster"
 		}
 	}
 }
