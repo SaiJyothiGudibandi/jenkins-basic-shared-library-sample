@@ -5,11 +5,7 @@ def call(Map config) {
 	def helm_chart_url
 	def docker_img
 	def docker_tag = config.docker_tag
-
-	def yamlConfig = config.build_config
-	println yamlConfig
-	build_info = readYaml file: yamlConfig
-	println build_info
+	def helm_docker_img = config.helm_docker_img
 
 	// def build_info = readYaml file: "values.yaml"
 
@@ -65,7 +61,7 @@ def call(Map config) {
 				scanStages()
 				testStages()
 				publishStages(helm_chart_url, docker_img, docker_tag)
-				deployStages(helm_chart_url)
+				deployStages(helm_chart_url, helm_docker_img, branch)
 			}
 		}catch (err) {
 	        currentBuild.result = 'FAILED'
@@ -123,7 +119,7 @@ def publishStages(helm_chart_url, docker_img, docker_tag){
 	}
 	parallel publishers
 }
-def deployStages(helm_chart_url) {
+def deployStages(helm_chart_url, helm_docker_img, branch) {
 	stage("Fetch-Helm-Chart") {
 		// fetch  helm_chart_url
 		echo "Fetching Helm chart ${helm_chart_url} from Helm Artifactory"
@@ -131,10 +127,16 @@ def deployStages(helm_chart_url) {
 		//quality gate - read value.yaml file & get the img url, if branch is not feature and the img url is prefix with feature then error out.
 		//branch is not feature then error out that u r ref to the feature branch image.
 		echo "Read values.yaml after unzipping"
+		qualityGate(helm_docker_img, branch)
 
 	}
 	stage("Deploy-to-GKE") {
 		//Run helm command to deploy
 		echo "Deploying Helm chart ${helm_chart_url} to GKE cluster"
 	}
+}
+
+def qualityGate(helm_docker_img, branch){
+	println helm_docker_img
+	println branch
 }
