@@ -43,6 +43,13 @@ def call(Map config) {
 	    // Clean workspace before doing anything
 	    deleteDir()
 
+		pomPath = findFiles(glob: "**/values.yaml")[0].path
+		env.WORKSPACE = pwd()
+		echo $env.WORKSPACE
+		def projectName = new File(pomPath).parent
+		baseDir = "${env.WORKSPACE}/$projectName"
+		echo $baseDir
+
 		def build_info = readYaml file: "values.yaml"
 
 	    try {
