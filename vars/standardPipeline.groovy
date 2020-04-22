@@ -44,7 +44,7 @@ def call(Map config) {
 	    deleteDir()
 
 		//def build_info = readYaml file: "./resources/values.yaml"
-		sh "ls *.yaml > listJsonFiles"
+		sh "ls '*.yaml' > listJsonFiles"
 		def files = readFile( "listJsonFiles" ).split( "\\r?\\n" );
 		sh "rm -f listJsonFiles"
 
