@@ -43,7 +43,7 @@ def call(Map config) {
 	    // Clean workspace before doing anything
 	    deleteDir()
 
-		def build_info = readYaml file: "values.yaml"
+		def build_info = readYaml file: "./${CURRENT_STAGE}/resources/values.yaml"
 
 	    try {
 			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
@@ -100,10 +100,10 @@ def publishStages(helm_chart_url, docker_img, docker_tag){
 			}
 			stage("Publish Docker Image") {
 				sh "docker push ${docker_img}:${docker_tag}"
-				sh "docker stop \$(docker ps -a -q)"
-				sh "docker rm \$(docker ps -a -q)"
-				sh "docker run --name mynginx1 -p 80:80 -d ${docker_img}:${docker_tag}"
-				echo "Published docker image - ${docker_img}:${docker_tag}"
+				// sh "docker stop \$(docker ps -a -q)"
+				// sh "docker rm \$(docker ps -a -q)"
+				// sh "docker run --name mynginx1 -p 80:80 -d ${docker_img}:${docker_tag}"
+				echo "Published docker image - ${docker_img}:${docker_tag} to artifactory"
 			}
 	}
 	publishers["gcr"] = {
