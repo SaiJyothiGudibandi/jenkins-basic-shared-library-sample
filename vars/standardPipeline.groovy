@@ -52,7 +52,7 @@ def call(Map config) {
 				docker_img = config.docker_id + '/' + 'feature-' + config.docker_label + '-' + env.BUILD_NUMBER
 				// println docker_img
 			}
-			if (branch.startsWith("feature") || branch.startsWith("dev") || branch.startsWith("rel") || branch.startsWith("master")) {
+			if (branch.startsWith("feature") || branch.startsWith("dev")) {
 					echo "Starts with Feature* or Dev"
 					stage('Checkout') {
 						checkout scm
@@ -61,6 +61,9 @@ def call(Map config) {
 				scanStages()
 				testStages()
 				publishStages(helm_chart_url, docker_img, docker_tag)
+				deployStages(helm_chart_url, helm_docker_img, branch)
+			}
+			if (branch.startsWith("rel") || branch.startsWith("master")) {
 				deployStages(helm_chart_url, helm_docker_img, branch)
 			}
 		}catch (err) {
@@ -133,8 +136,9 @@ def deployStages(helm_chart_url, helm_docker_img, branch) {
 	def helm_docker_img_label = helm_docker_img.substring(helm_docker_img.lastIndexOf("/") + 1)
 	helm_docker_img_label = helm_docker_img_label.substring(0, helm_docker_img_label.indexOf('-'))
 	println helm_docker_img_label
-	if (helm_docker_img_label == "feature" && helm_docker_img_label != branch) {
+	if (helm_docker_img_label == "feature" && !branch.startsWith("feature")){
 		println "Can't deploy ${helm_chart_url} to GKE, because you are refering to Feature branch image in Helm Chart values file."
+		exit 0
 	} else {
 			//Run helm command to deploy
 			echo "Deploying Helm chart ${helm_chart_url} to GKE cluster"
