@@ -116,7 +116,7 @@ def publishStages(helm_chart_url, docker_img, docker_tag){
 	}
 	parallel publishers
 }
-def deployStages(helm_chart_url, build_info, value_info) {
+def deployStages(helm_chart_url) {
 	stage("Fetch-Helm-Chart") {
 		// fetch  helm_chart_url
 		echo "Fetching Helm chart ${helm_chart_url} from Helm Artifactory"
