@@ -4,7 +4,8 @@ def call(Map config) {
 	def branch
 	def helm_chart_url
 	def docker_img
-	def value_info = readYaml file: "resources/values.yaml"
+	def value_info = []
+	value_info= readYaml file: "resources/values.yaml"
 
 	// Setting Helm Chart Url based on the values passed from the config
 	if (config.helm_artifactory_url && config.helm_chart_name) {
