@@ -6,6 +6,8 @@ def call(Map config) {
 	def docker_img
 	def docker_tag = config.docker_tag
 
+	def build_info = readYaml file: "values.yaml"
+
 	// Setting Helm Chart Url based on the values passed from the config
 	if (config.helm_artifactory_url && config.helm_chart_name) {
 		if (config.helm_artifactory_url =~ /\/$/) {
@@ -95,7 +97,6 @@ def publishStages(helm_chart_url, docker_img, docker_tag){
 				sh "docker build -t ${docker_img}:${docker_tag} ."
 			}
 			stage("Publish Docker Image") {
-				//add tag
 				sh "docker push ${docker_img}:${docker_tag}"
 				sh "docker stop \$(docker ps -a -q)"
 				sh "docker rm \$(docker ps -a -q)"
@@ -123,6 +124,8 @@ def deployStages(helm_chart_url) {
 		echo "Unzip ${helm_chart_url}"
 		//quality gate - read value.yaml file & get the img url, if branch is not feature and the img url is prefix with feature then error out.
 		//branch is not feature then error out that u r ref to the feature branch image.
+		echo "Read values.yaml after unzipping"
+
 	}
 	stage("Deploy-to-GKE") {
 		//Run helm command to deploy
