@@ -44,9 +44,7 @@ def call(Map config) {
 	    deleteDir()
 
 		//def build_info = readYaml file: "./resources/values.yaml"
-		sh "ls '*.yaml' > listJsonFiles"
-		def files = readFile( "listJsonFiles" ).split( "\\r?\\n" );
-		sh "rm -f listJsonFiles"
+		sh "find . -name '*.yaml"
 
 	    try {
 			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
