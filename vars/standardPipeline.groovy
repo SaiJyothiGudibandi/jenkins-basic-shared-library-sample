@@ -5,7 +5,7 @@ def call(Map config) {
 	def helm_chart_url
 	def docker_img
 	def docker_tag = config.docker_tag
-	echo "ls -al"
+	sh "ls -al"
 
 	// def build_info = readYaml file: "values.yaml"
 
