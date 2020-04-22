@@ -99,10 +99,10 @@ def publishStages(helm_chart_url, docker_img, docker_tag){
 	def publishers = [:]
 	publishers["docker"] = {
 			stage("Build-Docker-Image") {
-				sh "docker build -t ${docker_img}:${docker_tag} ."
+				echo "docker build -t ${docker_img}:${docker_tag} ."
 			}
 			stage("Publish-Docker-Image-to-Artifactory") {
-				sh "docker push ${docker_img}:${docker_tag}"
+				// sh "docker push ${docker_img}:${docker_tag}"
 				// sh "docker stop \$(docker ps -a -q)"
 				// sh "docker rm \$(docker ps -a -q)"
 				// sh "docker run --name mynginx1 -p 80:80 -d ${docker_img}:${docker_tag}"
@@ -131,15 +131,21 @@ def deployStages(helm_chart_url, helm_docker_img, branch) {
 		//branch is not feature then error out that u r ref to the feature branch image.
 	}
 	stage("Deploy-to-GKE") {
-	echo "Read values.yaml after unzipping"
-	println helm_docker_img
-	def helm_docker_img_label = helm_docker_img.substring(helm_docker_img.lastIndexOf("/") + 1)
-	helm_docker_img_label = helm_docker_img_label.substring(0, helm_docker_img_label.indexOf('-'))
-	println helm_docker_img_label
-	if (helm_docker_img_label == "feature" && !branch.startsWith("feature")){
-		println "Can't deploy ${helm_chart_url} to GKE, because you are refering to Feature branch image in Helm Chart values file."
-		exit 0
-	} else {
+		echo "Read values.yaml after unzipping"
+		println helm_docker_img
+		def helm_docker_img_label = helm_docker_img.substring(helm_docker_img.lastIndexOf("/") + 1)
+		helm_docker_img_label = helm_docker_img_label.substring(0, helm_docker_img_label.indexOf('-'))
+		println helm_docker_img_label
+		if (helm_docker_img_label == "feature"){
+			if (branch.startsWith("feature")){
+				//Run helm command to deploy
+				echo "Deploying Helm chart ${helm_chart_url} to Lower GKE cluster"
+			} else {
+				println "Can't deploy ${helm_chart_url} to GKE, because you are refering to Feature branch image in Helm Chart values file."
+				exit 0
+			}
+		}
+		else {
 			//Run helm command to deploy
 			echo "Deploying Helm chart ${helm_chart_url} to GKE cluster"
 		}
