@@ -138,7 +138,7 @@ def deployStages(helm_chart_url, helm_docker_img, branch) {
 def qualityGate(helm_docker_img, branch){
 	println helm_docker_img
 	//([^\/]+$)
-	def helm_docker_img_label = helm_docker_img.substring(helm_docker_img.lastIndexOf(":") + 1)
+	def helm_docker_img_label = helm_docker_img.substring(helm_docker_img.lastIndexOf("/") + 1)
 	println helm_docker_img_label
 	//if (helm_docker_img_label.startsWith("feature") && )
 	println branch
