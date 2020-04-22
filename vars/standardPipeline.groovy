@@ -45,7 +45,7 @@ def call(Map config) {
 			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
 			sh "echo $branch"
 			if (branch.startsWith("feature")){
-				docker_img = config.docker_id + '/' + '-' + 'feature' + config.docker_label + '-' + env.BUILD_NUMBER
+				docker_img = config.docker_id + '/' + 'feature-' + config.docker_label + '-' + env.BUILD_NUMBER
 				// println docker_img
 			}
 			if (branch.startsWith("feature") || branch.startsWith("dev") || branch.startsWith("rel") || branch.startsWith("master")) {
