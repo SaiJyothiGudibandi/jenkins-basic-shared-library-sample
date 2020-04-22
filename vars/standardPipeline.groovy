@@ -4,9 +4,6 @@ def call(Map config) {
 	def branch
 	def helm_chart_url
 	def docker_img
-	def value_info = []
-	// read file
-	value_info= readYaml file: '../resources/values.yaml'
 
 	// Setting Helm Chart Url based on the values passed from the config
 	if (config.helm_artifactory_url && config.helm_chart_name) {
@@ -47,7 +44,7 @@ def call(Map config) {
 			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
 			sh "echo $branch"
 			if (branch.startsWith("feature")){
-				docker_img = docker_img + '-' + 'feature'
+				docker_img = config.docker_id + '/' + '-' + 'feature' + config.docker_label + '-' + env.BUILD_NUMBER
 				// println docker_img
 			}
 			if (branch.startsWith("feature") || branch.startsWith("dev") || branch.startsWith("rel") || branch.startsWith("master")) {
@@ -59,7 +56,7 @@ def call(Map config) {
 				scanStages()
 				testStages()
 				publishStages(helm_chart_url, docker_img)
-				deployStages(helm_chart_url, value_info)
+				deployStages(helm_chart_url)
 			}
 		}catch (err) {
 	        currentBuild.result = 'FAILED'
@@ -94,15 +91,15 @@ def publishStages(helm_chart_url, docker_img){
 	def publishers = [:]
 	publishers["docker"] = {
 			stage("Build Docker Image") {
-				sh "docker build -t ${docker_img} ."
+				sh "docker build -t ${docker_img}:${config.docker_tag} ."
 			}
 			stage("Publish Docker Image") {
 				//add tag
-				//sh "docker push ${docker_img}"
-				//sh "docker stop \$(docker ps -a -q)"
-				//sh "docker rm \$(docker ps -a -q)"
-				//sh "docker run --name mynginx1 -p 80:80 -d ${docker_img}"
-				//echo "Published docker image - ${docker_img}"
+				sh "docker push ${docker_img}:${config.docker_tag}"
+				sh "docker stop \$(docker ps -a -q)"
+				sh "docker rm \$(docker ps -a -q)"
+				sh "docker run --name mynginx1 -p 80:80 -d ${docker_img}:${config.docker_tag}"
+				echo "Published docker image - ${docker_img}"
 			}
 	}
 	publishers["gcr"] = {
@@ -123,7 +120,6 @@ def deployStages(helm_chart_url, build_info, value_info) {
 		// fetch  helm_chart_url
 		echo "Fetching Helm chart ${helm_chart_url} from Helm Artifactory"
 		echo "Unzip ${helm_chart_url}"
-		executeHelmValue(value_info)
 		//quality gate - read value.yaml file & get the img url, if branch is not feature and the img url is prefix with feature then error out.
 		//branch is not feature then error out that u r ref to the feature branch image.
 	}
@@ -131,8 +127,4 @@ def deployStages(helm_chart_url, build_info, value_info) {
 		//Run helm command to deploy
 		echo "Deploying Helm chart ${helm_chart_url} to GKE cluster"
 	}
-}
-def executeHelmValue(value_info){
-	println "Values.yaml info"
-	map.each{ k, v -> println "${k}:${v}" }
 }
