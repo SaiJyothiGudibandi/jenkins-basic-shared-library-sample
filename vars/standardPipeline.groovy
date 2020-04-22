@@ -4,6 +4,7 @@ def call(Map config) {
 	def branch
 	def helm_chart_url
 	def docker_img
+	def docker_tag = config.docker_tag
 
 	// Setting Helm Chart Url based on the values passed from the config
 	if (config.helm_artifactory_url && config.helm_chart_name) {
@@ -55,7 +56,7 @@ def call(Map config) {
 				buildStages()
 				scanStages()
 				testStages()
-				publishStages(helm_chart_url, docker_img)
+				publishStages(helm_chart_url, docker_img, docker_tag)
 				deployStages(helm_chart_url)
 			}
 		}catch (err) {
@@ -87,24 +88,24 @@ def scanStages(){
 		echo("Code Scan Stage")
 	}
 }
-def publishStages(helm_chart_url, docker_img){
+def publishStages(helm_chart_url, docker_img, docker_tag){
 	def publishers = [:]
 	publishers["docker"] = {
 			stage("Build Docker Image") {
-				sh "docker build -t ${docker_img}:${config.docker_tag} ."
+				sh "docker build -t ${docker_img}:${docker_tag} ."
 			}
 			stage("Publish Docker Image") {
 				//add tag
-				sh "docker push ${docker_img}:${config.docker_tag}"
+				sh "docker push ${docker_img}:${docker_tag}"
 				sh "docker stop \$(docker ps -a -q)"
 				sh "docker rm \$(docker ps -a -q)"
-				sh "docker run --name mynginx1 -p 80:80 -d ${docker_img}:${config.docker_tag}"
-				echo "Published docker image - ${docker_img}"
+				sh "docker run --name mynginx1 -p 80:80 -d ${docker_img}:${docker_tag}"
+				echo "Published docker image - ${docker_img}:${docker_tag}"
 			}
 	}
 	publishers["gcr"] = {
 		stage("Publish Image to GCR") {
-			echo "Publishing docker image - ${docker_img} to GCR"
+			echo "Publishing docker image - ${docker_img}:${docker_tag} to GCR"
 		}
 	}
 	publishers["helm-chart"] = {
