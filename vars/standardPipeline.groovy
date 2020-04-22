@@ -6,6 +6,9 @@ def call(Map config) {
 	def docker_img
 	def docker_tag = config.docker_tag
 
+	def yamlConfig = "${config.build_config}"
+	println yamlConfig
+
 	// def build_info = readYaml file: "values.yaml"
 
 	// Setting Helm Chart Url based on the values passed from the config
@@ -44,8 +47,6 @@ def call(Map config) {
 	    deleteDir()
 
 		//def build_info = readYaml file: "./resources/values.yaml"
-		sh "find . -name '*.yaml'"
-
 	    try {
 			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
 			sh "echo $branch"
