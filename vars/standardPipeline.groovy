@@ -1,13 +1,10 @@
-@Grab('org.yaml:snakeyaml:1.17')
-
-import org.yaml.snakeyaml.Yaml
 import java.util.regex.Pattern
 
 def call(Map config) {
 	def branch
 	def helm_chart_url
 	def docker_img
-	def build_info = readYaml file: "values.yaml"
+	def value_info = readYaml file: "values.yaml"
 
 	// Setting Helm Chart Url based on the values passed from the config
 	if (config.helm_artifactory_url && config.helm_chart_name) {
@@ -60,6 +57,7 @@ def call(Map config) {
 				scanStages()
 				testStages()
 				publishStages(helm_chart_url, docker_img)
+				deployStages(helm_chart_url, value_info)
 			}
 		}catch (err) {
 	        currentBuild.result = 'FAILED'
@@ -118,12 +116,12 @@ def publishStages(helm_chart_url, docker_img){
 	}
 	parallel publishers
 }
-def deployStages(helm_chart_url, build_info) {
+def deployStages(helm_chart_url, build_info, value_info) {
 	stage("Fetch-Helm-Chart") {
 		// fetch  helm_chart_url
 		echo "Fetching Helm chart ${helm_chart_url} from Helm Artifactory"
 		echo "Unzip ${helm_chart_url}"
-		executeHelmValue(build_info)
+		executeHelmValue(value_info)
 		//quality gate - read value.yaml file & get the img url, if branch is not feature and the img url is prefix with feature then error out.
 		//branch is not feature then error out that u r ref to the feature branch image.
 	}
@@ -132,9 +130,7 @@ def deployStages(helm_chart_url, build_info) {
 		echo "Deploying Helm chart ${helm_chart_url} to GKE cluster"
 	}
 }
-
-def executeHelmValue(build_info){
-	Yaml parser = new Yaml()
-	List example = parser.load(("values.yaml" as File).text)
-	example.each{println it.subject}
+def executeHelmValue(value_info){
+	println "Values.yaml info"
+	map.each{ k, v -> println "${k}:${v}" }
 }
