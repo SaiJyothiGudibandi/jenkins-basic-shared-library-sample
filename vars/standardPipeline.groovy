@@ -5,7 +5,6 @@ def call(Map config) {
 	def helm_chart_url
 	def docker_img
 	def docker_tag = config.docker_tag
-	sh "ls -al"
 
 	// def build_info = readYaml file: "values.yaml"
 
@@ -43,6 +42,8 @@ def call(Map config) {
     node {
 	    // Clean workspace before doing anything
 	    deleteDir()
+
+		def build_info = readYaml file: "values.yaml"
 
 	    try {
 			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
