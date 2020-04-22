@@ -5,8 +5,9 @@ def call(Map config) {
 	def helm_chart_url
 	def docker_img
 	def docker_tag = config.docker_tag
+	echo "ls -al"
 
-	def build_info = readYaml file: "values.yaml"
+	// def build_info = readYaml file: "values.yaml"
 
 	// Setting Helm Chart Url based on the values passed from the config
 	if (config.helm_artifactory_url && config.helm_chart_name) {
