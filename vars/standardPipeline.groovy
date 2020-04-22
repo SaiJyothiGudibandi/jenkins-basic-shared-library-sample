@@ -98,10 +98,10 @@ def scanStages(){
 def publishStages(helm_chart_url, docker_img, docker_tag){
 	def publishers = [:]
 	publishers["docker"] = {
-			stage("Build Docker Image") {
+			stage("Build-Docker-Image") {
 				sh "docker build -t ${docker_img}:${docker_tag} ."
 			}
-			stage("Publish Docker Image") {
+			stage("Publish-Docker-Image-to-Artifactory") {
 				sh "docker push ${docker_img}:${docker_tag}"
 				// sh "docker stop \$(docker ps -a -q)"
 				// sh "docker rm \$(docker ps -a -q)"
@@ -110,20 +110,20 @@ def publishStages(helm_chart_url, docker_img, docker_tag){
 			}
 	}
 	publishers["gcr"] = {
-		stage("Publish Image to GCR") {
+		stage("Publish-Docker-Image-to-GCR") {
 			echo "Publishing docker image - ${docker_img}:${docker_tag} to GCR"
 		}
 	}
 	publishers["helm-chart"] = {
 		//Publish helm chart to artifact
-			stage("Publish Helm Chart") {
+			stage("Publish-Helm-Chart-to-Artifactory") {
 				 echo "Publish Helm Chart ${helm_chart_url} "
 			}
 	}
 	parallel publishers
 }
 def deployStages(helm_chart_url, helm_docker_img, branch) {
-	stage("Fetch-Helm-Chart") {
+	stage("Fetch-Helm-Chart-from-Artifactory") {
 		// fetch  helm_chart_url
 		echo "Fetching Helm chart ${helm_chart_url} from Helm Artifactory"
 		echo "Unzip ${helm_chart_url}"
