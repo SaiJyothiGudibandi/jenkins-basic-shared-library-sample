@@ -8,7 +8,7 @@ def call(Map config) {
 
 	def yamlConfig = config.build_config
 	println yamlConfig
-	build_info = readYaml file: yaml_file
+	build_info = readYaml file: yamlConfig
 	println build_info
 
 	// def build_info = readYaml file: "values.yaml"
