@@ -127,21 +127,22 @@ def deployStages(helm_chart_url, helm_docker_img, branch) {
 		//quality gate - read value.yaml file & get the img url, if branch is not feature and the img url is prefix with feature then error out.
 		//branch is not feature then error out that u r ref to the feature branch image.
 		echo "Read values.yaml after unzipping"
-		qualityGate(helm_docker_img, branch)
-	}
-	stage("Deploy-to-GKE") {
-		//Run helm command to deploy
-		echo "Deploying Helm chart ${helm_chart_url} to GKE cluster"
+		qualityGate(helm_docker_img, branch, helm_chart_url)
 	}
 }
 
 def qualityGate(helm_docker_img, branch){
 	println helm_docker_img
-	//([^\/]+$)
 	def helm_docker_img_label = helm_docker_img.substring(helm_docker_img.lastIndexOf("/") + 1)
-	println helm_docker_img_label
 	helm_docker_img_label = helm_docker_img_label.substring(0, helm_docker_img_label.indexOf('-'))
 	println helm_docker_img_label
-	//if (helm_docker_img_label.startsWith("feature") && )
-	println branch
+	if (helm_docker_img_label == "feature" && helm_docker_img_label != branch){
+		println "Can't deploy ${helm_chart_url} to GKE, because you are refering to Feature branch image in Helm Chart values file."
+	}
+	else{
+		stage("Deploy-to-GKE") {
+			//Run helm command to deploy
+			echo "Deploying Helm chart ${helm_chart_url} to GKE cluster"
+		}
+	}
 }
