@@ -6,8 +6,10 @@ def call(Map config) {
 	def docker_img
 	def docker_tag = config.docker_tag
 
-	def yamlConfig = "${config.build_config}"
+	def yamlConfig = config.build_config
 	println yamlConfig
+	build_info = readYaml file: yaml_file
+	println build_info
 
 	// def build_info = readYaml file: "values.yaml"
 
