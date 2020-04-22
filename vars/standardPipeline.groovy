@@ -43,7 +43,7 @@ def call(Map config) {
 	    // Clean workspace before doing anything
 	    deleteDir()
 
-		def build_info = readYaml file: "resources/values.yaml"
+		def build_info = readYaml file: "values.yaml"
 
 	    try {
 			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
