@@ -140,6 +140,8 @@ def qualityGate(helm_docker_img, branch){
 	//([^\/]+$)
 	def helm_docker_img_label = helm_docker_img.substring(helm_docker_img.lastIndexOf("/") + 1)
 	println helm_docker_img_label
+	helm_docker_img_label = helm_docker_img_label.substring(0, helm_docker_img_label.indexOf('-'))
+	println helm_docker_img_label
 	//if (helm_docker_img_label.startsWith("feature") && )
 	println branch
 }
