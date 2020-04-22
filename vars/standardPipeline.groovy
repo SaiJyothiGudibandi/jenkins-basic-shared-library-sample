@@ -50,7 +50,10 @@ def call(Map config) {
 			sh "echo $branch"
 			if (branch.startsWith("feature")){
 				docker_img = config.docker_id + '/' + 'feature-' + config.docker_label + '-' + env.BUILD_NUMBER
-				// println docker_img
+				helm_chart_url = config.helm_artifactory_url + 'feature-' + config.helm_chart_name
+				println docker_img
+				println helm_chart_url
+				
 			}
 			if (branch.startsWith("feature") || branch.startsWith("dev")) {
 				echo "Starts with Feature* or Dev"
