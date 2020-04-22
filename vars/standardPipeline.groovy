@@ -33,19 +33,19 @@ def call(Map config) {
 
 	//Setting Docker image name based on the values passed from the config
 	if(config.docker_id && config.docker_label){
-			docker_img = config.docker_id + '/' + config.docker_label + '-' + env.BUILD_NUMBER
-			println docker_img
-		}else{
+		docker_img = config.docker_id + '/' + config.docker_label + '-' + env.BUILD_NUMBER
+		println docker_img
+	}else{
 		println "Docker vars not defined/null"
 		sh "exit 0"
 	}
 
-    node {
-	    // Clean workspace before doing anything
-	    deleteDir()
+	node {
+		// Clean workspace before doing anything
+		deleteDir()
 
 		//def build_info = readYaml file: "./resources/values.yaml"
-	    try {
+		try {
 			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
 			sh "echo $branch"
 			if (branch.startsWith("feature")){
@@ -53,10 +53,10 @@ def call(Map config) {
 				// println docker_img
 			}
 			if (branch.startsWith("feature") || branch.startsWith("dev")) {
-					echo "Starts with Feature* or Dev"
-					stage('Checkout') {
-						checkout scm
-					}
+				echo "Starts with Feature* or Dev"
+				stage('Checkout') {
+					checkout scm
+				}
 				buildStages()
 				scanStages()
 				testStages()
@@ -67,10 +67,10 @@ def call(Map config) {
 				deployStages(helm_chart_url, helm_docker_img, branch)
 			}
 		}catch (err) {
-	        currentBuild.result = 'FAILED'
-	        throw err
-	    }
-    }
+			currentBuild.result = 'FAILED'
+			throw err
+		}
+	}
 }
 def buildStages() {
 	stage("Build") {
@@ -98,16 +98,16 @@ def scanStages(){
 def publishStages(helm_chart_url, docker_img, docker_tag){
 	def publishers = [:]
 	publishers["docker"] = {
-			stage("Build-Docker-Image") {
-				echo "docker build -t ${docker_img}:${docker_tag} ."
-			}
-			stage("Publish-Docker-Image-to-Artifactory") {
-				// sh "docker push ${docker_img}:${docker_tag}"
-				// sh "docker stop \$(docker ps -a -q)"
-				// sh "docker rm \$(docker ps -a -q)"
-				// sh "docker run --name mynginx1 -p 80:80 -d ${docker_img}:${docker_tag}"
-				echo "Published docker image - ${docker_img}:${docker_tag} to artifactory"
-			}
+		stage("Build-Docker-Image") {
+			echo "docker build -t ${docker_img}:${docker_tag} ."
+		}
+		stage("Publish-Docker-Image-to-Artifactory") {
+			// sh "docker push ${docker_img}:${docker_tag}"
+			// sh "docker stop \$(docker ps -a -q)"
+			// sh "docker rm \$(docker ps -a -q)"
+			// sh "docker run --name mynginx1 -p 80:80 -d ${docker_img}:${docker_tag}"
+			echo "Published docker image - ${docker_img}:${docker_tag} to artifactory"
+		}
 	}
 	publishers["gcr"] = {
 		stage("Publish-Docker-Image-to-GCR") {
@@ -116,9 +116,9 @@ def publishStages(helm_chart_url, docker_img, docker_tag){
 	}
 	publishers["helm-chart"] = {
 		//Publish helm chart to artifact
-			stage("Publish-Helm-Chart-to-Artifactory") {
-				 echo "Publish Helm Chart ${helm_chart_url} "
-			}
+		stage("Publish-Helm-Chart-to-Artifactory") {
+			echo "Publish Helm Chart ${helm_chart_url} "
+		}
 	}
 	parallel publishers
 }
@@ -136,18 +136,19 @@ def deployStages(helm_chart_url, helm_docker_img, branch) {
 		def helm_docker_img_label = helm_docker_img.substring(helm_docker_img.lastIndexOf("/") + 1)
 		helm_docker_img_label = helm_docker_img_label.substring(0, helm_docker_img_label.indexOf('-'))
 		println helm_docker_img_label
-		if (helm_docker_img_label == "feature"){
-			if (branch.startsWith("feature")){
-				//Run helm command to deploy
-				echo "Deploying Helm chart ${helm_chart_url} to Lower GKE cluster"
+		ansiColor("xterm") {
+			if (helm_docker_img_label == "feature") {
+				if (branch.startsWith("feature")) {
+					//Run helm command to deploy
+					echo "Deploying Helm chart ${helm_chart_url} to Lower GKE cluster"
+				} else {
+					println "Can't deploy ${helm_chart_url} to GKE, because you are refering to Feature branch image in Helm Chart values file."
+					exit 0
+				}
 			} else {
-				println "Can't deploy ${helm_chart_url} to GKE, because you are refering to Feature branch image in Helm Chart values file."
-				exit 0
+				//Run helm command to deploy
+				echo "Deploying Helm chart ${helm_chart_url} to GKE cluster"
 			}
-		}
-		else {
-			//Run helm command to deploy
-			echo "Deploying Helm chart ${helm_chart_url} to GKE cluster"
 		}
 	}
 }
