@@ -1,13 +1,13 @@
+@Grab('org.yaml:snakeyaml:1.17')
+
+import org.yaml.snakeyaml.Yaml
 import java.util.regex.Pattern
 
 def call(Map config) {
-    // def config = [:]
 	def branch
 	def helm_chart_url
 	def docker_img
-
-	echo config.helm_artifactory_url
-	echo config.helm_chart_name
+	def build_info = readYaml file: "values.yaml"
 
 	// Setting Helm Chart Url based on the values passed from the config
 	if (config.helm_artifactory_url && config.helm_chart_name) {
@@ -16,7 +16,7 @@ def call(Map config) {
 			helm_chart_url = config.helm_artifactory_url + config.helm_chart_name
 			println helm_chart_url
 		} else {
-			println "string does not have '/' at the end"
+			println "Helm URL does not have '/' at the end. Adding '/' ... "
 			config.helm_artifactory_url = config.helm_artifactory_url + '/';
 			println config.helm_artifactory_url;
 			helm_chart_url = config.helm_artifactory_url + config.helm_chart_name
@@ -25,9 +25,10 @@ def call(Map config) {
 		}
 	} else {
 		println "Helm Chart URl and Name - not defined or null"
-		error('Helm Chart URl and Name - not defined or null')
+		// error('Helm Chart URl and Name - not defined or null')
+		sh "exit 0"
 		// sh "exit 0"
-		error('Docker Vars not defined')
+		// error('Docker Vars not defined')
 	}
 
 	//Setting Docker image name based on the values passed from the config
@@ -47,11 +48,10 @@ def call(Map config) {
 			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
 			sh "echo $branch"
 			if (branch.startsWith("feature")){
-				docker_img = config.docker_id + '/' + config.docker_label + '-' + env.BUILD_NUMBER + '-' + 'feature'
-				println docker_img
+				docker_img = docker_img + '-' + 'feature'
+				// println docker_img
 			}
-
-			if (branch.startsWith("feature") || branch.startsWith("dev")) {
+			if (branch.startsWith("feature") || branch.startsWith("dev") || branch.startsWith("rel") || branch.startsWith("master")) {
 					echo "Starts with Feature* or Dev"
 					stage('Checkout') {
 						checkout scm
@@ -60,10 +60,6 @@ def call(Map config) {
 				scanStages()
 				testStages()
 				publishStages(helm_chart_url, docker_img)
-			}
-			if (branch.startsWith("dev") || branch.startsWith("rel") || branch.startsWith("master")) {
-				echo "Release branch or Master"
-				deployStages(helm_chart_url)
 			}
 		}catch (err) {
 	        currentBuild.result = 'FAILED'
@@ -98,50 +94,47 @@ def publishStages(helm_chart_url, docker_img){
 	def publishers = [:]
 	publishers["docker"] = {
 			stage("Build Docker Image") {
-				echo "Build Docker"
 				sh "docker build -t ${docker_img} ."
 			}
 			stage("Publish Docker Image") {
-				echo "Publish Docker"
-				sh "docker push ${docker_img}"
-				sh "docker stop \$(docker ps -a -q)"
-				sh "docker rm \$(docker ps -a -q)"
-				sh "docker run --name mynginx1 -p 80:80 -d ${docker_img}"
-				echo "Published docker image"
+				//add tag
+				//sh "docker push ${docker_img}"
+				//sh "docker stop \$(docker ps -a -q)"
+				//sh "docker rm \$(docker ps -a -q)"
+				//sh "docker run --name mynginx1 -p 80:80 -d ${docker_img}"
+				//echo "Published docker image - ${docker_img}"
 			}
 	}
 	publishers["gcr"] = {
-		stage("Push Image to GCR") {
-			if (docker_img.endsWith('feature')){
-				echo "Feature branch image ${docker_img} Cant publish to GCR"
-			}else {
-				echo "Pushing docker image - ${docker_img} to GCR"
-			}
+		stage("Publish Image to GCR") {
+			echo "Publishing docker image - ${docker_img} to GCR"
 		}
 	}
 	publishers["helm-chart"] = {
-			//stage("Build Helm Chart") {
-			//	echo "Build Helm Chart"
-			// }
-		//read environment_namespace variable from jenkinsfile and then publish
+		//Publish helm chart to artifact
 			stage("Publish Helm Chart") {
 				 echo "Publish Helm Chart ${helm_chart_url} "
-//				 use helm_chart_url
-//				 <environment_namespace>-<Helm-chart-name>
 			}
 	}
 	parallel publishers
 }
-def deployStages(helm_chart_url) {
+def deployStages(helm_chart_url, build_info) {
 	stage("Fetch-Helm-Chart") {
-		// get <environment_namespace>-<Helm-chart-name>
 		// fetch  helm_chart_url
-		//unzip tgz
 		echo "Fetching Helm chart ${helm_chart_url} from Helm Artifactory"
 		echo "Unzip ${helm_chart_url}"
+		executeHelmValue(build_info)
+		//quality gate - read value.yaml file & get the img url, if branch is not feature and the img url is prefix with feature then error out.
+		//branch is not feature then error out that u r ref to the feature branch image.
 	}
 	stage("Deploy-to-GKE") {
-		//run helm command
+		//Run helm command to deploy
 		echo "Deploying Helm chart ${helm_chart_url} to GKE cluster"
 	}
+}
+
+def executeHelmValue(build_info){
+	Yaml parser = new Yaml()
+	List example = parser.load(("values.yaml" as File).text)
+	example.each{println it.subject}
 }
