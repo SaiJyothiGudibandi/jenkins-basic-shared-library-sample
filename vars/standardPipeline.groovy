@@ -42,7 +42,7 @@ def call(Map config) {
 			//Setting Docker image name based on the values passed from the config
 			if(config.docker_tag && config.docker_label){
 				if (branch.startsWith("feature")) {
-					docker_img = "feature" + '-' + config.docker_label + '-' + env.BUILD_NUMBER
+					docker_img=docker_img.substring(0,docker_img.lastIndexOf('/')+1) + 'fearure-' + docker_img.substring(docker_img.lastIndexOf('/')+1) + '-' + env.BUILD_NUMBER
 					println docker_img
 				}
 				else{
