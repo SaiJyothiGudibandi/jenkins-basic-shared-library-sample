@@ -7,8 +7,6 @@ def call(Map config) {
 	def docker_tag = config.docker_tag
 	def helm_docker_img = config.helm_docker_img
 
-	// def build_info = readYaml file: "values.yaml"
-
 	// Setting Helm Chart Url based on the values passed from the config
 	if (config.helm_artifactory_url && config.helm_chart_name) {
 		if (config.helm_artifactory_url =~ /\/$/) {
@@ -25,24 +23,20 @@ def call(Map config) {
 		}
 	} else {
 		println "Helm Chart URl and Name - not defined or null"
-		// error('Helm Chart URl and Name - not defined or null')
 		sh "exit 0"
-		// sh "exit 0"
-		// error('Docker Vars not defined')
 	}
 
 	node {
 		// Clean workspace before doing anything
 		deleteDir()
 
-		//def build_info = readYaml file: "./resources/values.yaml"
 		try {
 			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
 			//sh "echo $branch"
 			//Setting Docker image name based on the values passed from the config
 			if(config.docker_tag && config.docker_label){
 				if (branch.startsWith("feature")) {
-					docker_img=docker_img.substring(0,docker_img.lastIndexOf('/')+1) + 'fearure-' + docker_img.substring(docker_img.lastIndexOf('/')+1) + '-' + env.BUILD_NUMBER
+					docker_img=config.docker_label.substring(0,config.docker_label.lastIndexOf('/')+1) + 'fearure-' + config.docker_label.substring(config.docker_label.lastIndexOf('/')+1) + '-' + env.BUILD_NUMBER
 					println docker_img
 				}
 				else{
