@@ -3,7 +3,7 @@ import java.util.regex.Pattern
 def call(Map config) {
 	def branch
 	def helm_chart_url
-	def docker_img
+	def docker_img = config.docker_label
 	def docker_tag = config.docker_tag
 	def helm_docker_img = config.helm_docker_img
 
