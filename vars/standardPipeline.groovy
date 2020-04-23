@@ -31,15 +31,6 @@ def call(Map config) {
 		// error('Docker Vars not defined')
 	}
 
-	//Setting Docker image name based on the values passed from the config
-	if(config.docker_id && config.docker_label){
-		docker_img = config.docker_id + '/' + config.docker_label + '-' + env.BUILD_NUMBER
-		println docker_img
-	}else{
-		println "Docker vars not defined/null"
-		sh "exit 0"
-	}
-
 	node {
 		// Clean workspace before doing anything
 		deleteDir()
@@ -47,13 +38,20 @@ def call(Map config) {
 		//def build_info = readYaml file: "./resources/values.yaml"
 		try {
 			branch = env.BRANCH_NAME ? "${env.BRANCH_NAME}" : scm.branches[0].name
-			sh "echo $branch"
-			if (branch.startsWith("feature")){
-				docker_img = config.docker_id + '/' + 'feature-' + config.docker_label + '-' + env.BUILD_NUMBER
-				helm_chart_url = config.helm_artifactory_url + 'feature-' + config.helm_chart_name
-				println docker_img
-				println helm_chart_url
-				
+			//sh "echo $branch"
+			//Setting Docker image name based on the values passed from the config
+			if(config.docker_tag && config.docker_label){
+				if (branch.startsWith("feature")) {
+					docker_img = "feature" + '-' + config.docker_label + '-' + env.BUILD_NUMBER
+					println docker_img
+				}
+				else{
+					docker_img =  config.docker_label + '-' + env.BUILD_NUMBER
+					println docker_img
+				}
+			}else{
+				println "Docker vars not defined/null"
+				sh "exit 0"
 			}
 			if (branch.startsWith("feature") || branch.startsWith("dev")) {
 				echo "Starts with Feature* or Dev"
@@ -109,7 +107,7 @@ def publishStages(helm_chart_url, docker_img, docker_tag){
 			// sh "docker stop \$(docker ps -a -q)"
 			// sh "docker rm \$(docker ps -a -q)"
 			// sh "docker run --name mynginx1 -p 80:80 -d ${docker_img}:${docker_tag}"
-			echo "Published docker image - ${docker_img}:${docker_tag} to artifactory"
+			echo "Publish docker image - ${docker_img}:${docker_tag} to artifactory"
 		}
 	}
 	publishers["gcr"] = {
